@@ -42,7 +42,7 @@ const form = reactive({
 const error = ref<string | null>(null);
 const { setToken } = useAuth();
 
-const API_BASE = 'http://83.229.85.23:3000/api';
+const API_BASE = import.meta.env.VITE_API_URL;
 
 async function handleSubmit() {
   error.value = null;

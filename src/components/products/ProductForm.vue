@@ -98,7 +98,7 @@ interface Product {
 }
 
 const { token } = useAuth();
-const API_BASE = 'http://83.229.85.23:3000/api'
+const API_BASE = import.meta.env.VITE_API_URL
 
 const products = ref<Product[]>([])
 const response = ref('')

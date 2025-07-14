@@ -97,7 +97,8 @@ interface Customer {
   email: string;
 }
 
-const API_BASE = 'http://83.229.85.23:3000/api'
+const API_BASE = import.meta.env.VITE_API_URL
+const { token } = useAuth()
 
 const customers = ref<Customer[]>([])
 const response = ref('')
@@ -118,13 +119,22 @@ const updateForm = reactive({
   email: ''
 })
 
+// Helper function to get headers with auth token
+function getHeaders() {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  if (token.value) {
+    headers['Authorization'] = `Bearer ${token.value}`
+  }
+  return headers
+}
+
 async function createCustomer() {
   try {
     const res = await fetch(`${API_BASE}/customers`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getHeaders(),
       body: JSON.stringify({
         name: createForm.name,
         email: createForm.email
@@ -151,7 +161,9 @@ async function createCustomer() {
 
 async function getAllCustomers() {
   try {
-    const res = await fetch(`${API_BASE}/customers`)
+    const res = await fetch(`${API_BASE}/customers`, {
+      headers: getHeaders()
+    })
     const data = await res.json()
     
     if (res.ok) {
@@ -170,7 +182,9 @@ async function getAllCustomers() {
 
 async function getCustomerById() {
   try {
-    const res = await fetch(`${API_BASE}/customers/${getIdForm.id}`)
+    const res = await fetch(`${API_BASE}/customers/${getIdForm.id}`, {
+      headers: getHeaders()
+    })
     const data = await res.json()
     
     if (res.ok) {
@@ -190,9 +204,7 @@ async function updateCustomer() {
   try {
     const res = await fetch(`${API_BASE}/customers/${updateForm.id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getHeaders(),
       body: JSON.stringify({
         name: updateForm.name,
         email: updateForm.email
@@ -221,7 +233,8 @@ async function updateCustomer() {
 async function deleteCustomer(id: number) {
   try {
     const res = await fetch(`${API_BASE}/customers/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getHeaders()
     })
     
     if (res.ok) {
